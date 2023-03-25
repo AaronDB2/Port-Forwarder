@@ -13,12 +13,15 @@ const app2 = express();
 const app3 = express();
 
 // Middleware for serving static files
-app1.use(express.static("public1"));
-app2.use(express.static("public2"));
-app3.use(express.static("public3"));
+app1.use(express.static("public1", { maxAge: 86400000 }));
+app2.use(express.static("public2", { maxAge: 86400000 }));
+app3.use(express.static("public3", { maxAge: 86400000 }));
 
 // Handler method that sends responses and caches
 const handler = (num) => (req, res) => {
+  const mykeys = cache.keys();
+
+  console.log(mykeys);
   // Make a response
   const response = `Response from server ${num}`;
 

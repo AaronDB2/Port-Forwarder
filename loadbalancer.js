@@ -1,5 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
+const NodeCache = require("node-cache");
+
+const cache = new NodeCache();
 
 // Make app instance
 const app = express();
@@ -31,10 +34,26 @@ const handler = async (req, res) => {
   } else {
     current = 0;
   }
+
+  // Check if there is a cached response with current server
+  const cachedResponse = cache.get(server);
+
+  // If there is a cache found for the server key send the cached result and return the fuction
+  if (cachedResponse) {
+    console.log(`Found cache with ${server} as key`);
+    res.send(cachedResponse);
+    return;
+  }
+
+  console.log(`didnt find cache with ${server} as key`);
   if (req.url === "/index.html") {
     fetch(`${server}/index.html`)
       .then((response) => response.text())
-      .then((data) => res.send(data))
+      .then((data) => {
+        cache.set(server, data);
+        res.setHeader("Cache-Control", "public, max-age=3600");
+        res.send(data);
+      })
       .catch((error) => {
         console.log(error);
       });
