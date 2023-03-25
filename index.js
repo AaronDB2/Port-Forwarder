@@ -12,6 +12,11 @@ const app2 = express();
 // Initialize web server 3
 const app3 = express();
 
+// Middleware for serving static files
+app1.use(express.static("public1"));
+app2.use(express.static("public2"));
+app3.use(express.static("public3"));
+
 // Handler method that sends responses and caches
 const handler = (num) => (req, res) => {
   // Make a response
@@ -36,10 +41,10 @@ const handler = (num) => (req, res) => {
   }
 };
 
-// Handle GET and POST requests
-app1.get("*", handler(1)).post("*", handler(1));
-app2.get("*", handler(2)).post("*", handler(2));
-app3.get("*", handler(3)).post("*", handler(3));
+// Handle GET requests
+app1.get("*", handler(1));
+app2.get("*", handler(2));
+app3.get("*", handler(3));
 
 // Start server on PORT 3000
 app1.listen(3000, (err) => {

@@ -31,17 +31,28 @@ const handler = async (req, res) => {
   } else {
     current = 0;
   }
-  // Requesting to web server
-  fetch(`${server}${url}`)
-    .then((response) => response.json())
-    .then((data) => res.send(data))
-    .catch((error) => {
-      console.log(error);
-    });
+  if (req.url === "/index.html") {
+    fetch(`${server}/index.html`)
+      .then((response) => response.text())
+      .then((data) => res.send(data))
+      .catch((error) => {
+        console.log(error);
+      });
+  } else {
+    // Requesting to web server
+    fetch(`${server}${url}`)
+      .then((response) => response.json())
+      .then((data) => res.send(data))
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 };
 
 // Get request for sending favicon
 app.get("/favicon.ico", (req, res) => res.sendFile("/favicon.ico"));
+
+app.get("/index.html", (req, res) => handler(req, res));
 
 //Pass new requests to handler method
 app.use((req, res) => {
