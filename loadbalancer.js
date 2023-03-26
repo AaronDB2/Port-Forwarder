@@ -57,26 +57,14 @@ const handler = async (req, res) => {
       .catch((error) => {
         console.log(error);
       });
-  } else {
-    // Requesting to web server
-    fetch(`${server}${url}`)
-      .then((response) => response.json())
-      .then((data) => res.send(data))
-      .catch((error) => {
-        console.log(error);
-      });
   }
 };
 
 // Get request for sending favicon
 app.get("/favicon.ico", (req, res) => res.sendFile("/favicon.ico"));
 
+// Get request for serving html file
 app.get("/index.html", (req, res) => handler(req, res));
-
-//Pass new requests to handler method
-app.use((req, res) => {
-  handler(req, res);
-});
 
 //Listen on PORT 8080
 app.listen(8080, (err) => {

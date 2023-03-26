@@ -1,7 +1,4 @@
 const express = require("express");
-const NodeCache = require("node-cache");
-
-const cache = new NodeCache();
 
 // Initialize web server 1
 const app1 = express();
@@ -12,42 +9,40 @@ const app2 = express();
 // Initialize web server 3
 const app3 = express();
 
-// Middleware for serving static files
-app1.use(express.static("public1", { maxAge: 86400000 }));
-app2.use(express.static("public2", { maxAge: 86400000 }));
-app3.use(express.static("public3", { maxAge: 86400000 }));
+// Set EJS as render engine
+app1.set("view engine", "ejs");
+app1.set("views", __dirname + "/views");
+app2.set("view engine", "ejs");
+app2.set("views", __dirname + "/views");
+app3.set("view engine", "ejs");
+app3.set("views", __dirname + "/views");
 
-// Handler method that sends responses and caches
-const handler = (num) => (req, res) => {
-  const mykeys = cache.keys();
+// Serve the index.html file with some arguments
+app1.get("/index.html", (req, res) => {
+  const title = "Server1";
+  const message = "Welcome to my website! This website is loaded from server 1";
+  const style = "body { background-color: red; }";
 
-  console.log(mykeys);
-  // Make a response
-  const response = `Response from server ${num}`;
+  res.render("index", { title, message, style });
+});
 
-  // Check if there is a cached response with url and portnumber as key
-  const cachedResponse = cache.get(req.headers.host);
+// Serve the index.html file with some arguments
+app2.get("/index.html", (req, res) => {
+  const title = "Server2";
+  const message = "Welcome to my website! This website is loaded from server 2";
+  const style = "body { background-color: yellow; }";
 
-  // Compare response and cachedResponse
-  if (response !== cachedResponse) {
-    console.log("Did not find cache key");
-    // Set cache with url and port number as key
-    cache.set(req.headers.host, response);
-    res.setHeader("Cache-Control", "public, max-age=3600");
+  res.render("index", { title, message, style });
+});
 
-    // Send response as json
-    res.json({ message: response });
-  } else {
-    console.log("Found cache key");
-    // Send cachedResponse as json
-    return res.json({ message: cachedResponse });
-  }
-};
+// Serve the index.html file with some arguments
+app3.get("/index.html", (req, res) => {
+  const title = "Server3";
+  const message = "Welcome to my website! This website is loaded from server 3";
+  const style = "body { background-color: green; }";
 
-// Handle GET requests
-app1.get("*", handler(1));
-app2.get("*", handler(2));
-app3.get("*", handler(3));
+  res.render("index", { title, message, style });
+});
 
 // Start server on PORT 3000
 app1.listen(3000, (err) => {
