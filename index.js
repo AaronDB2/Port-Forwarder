@@ -1,66 +1,38 @@
 const express = require("express");
 
-// Initialize web server 1
-const app1 = express();
+const servers = [];
+const colors = ["red", "yellow", "blue"];
 
-// Initialize web server 2
-const app2 = express();
+for (var i = 0; i < colors.length; i++) {
+  const serverNumber = i + 1;
+  const backgroundColor = colors[i];
 
-// Initialize web server 3
-const app3 = express();
+  // Initialize web server
+  const app = express();
 
-// Set EJS as render engine
-app1.set("view engine", "ejs");
-app1.set("views", __dirname + "/views");
-app2.set("view engine", "ejs");
-app2.set("views", __dirname + "/views");
-app3.set("view engine", "ejs");
-app3.set("views", __dirname + "/views");
+  // Set EJS as render engine
+  app.set("view engine", "ejs");
+  app.set("views", __dirname + "/views");
 
-// Serve the index.html file with some arguments
-app1.get("/index.html", (req, res) => {
-  const title = "Server1";
-  const message = "Welcome to my website! This website is loaded from server 1";
-  const style = "body { background-color: red; }";
+  // Serve the index.html file with some arguments
+  app.get("/index.html", (req, res) => {
+    const title = `Server ${serverNumber}`;
+    const message = `Welcome to my website! This website is loaded from server ${serverNumber}`;
+    const style = `body { background-color: ${backgroundColor}; }`;
 
-  res.render("index", { title, message, style });
-});
+    res.render("index", { title, message, style });
+  });
 
-// Serve the index.html file with some arguments
-app2.get("/index.html", (req, res) => {
-  const title = "Server2";
-  const message = "Welcome to my website! This website is loaded from server 2";
-  const style = "body { background-color: yellow; }";
+  const PORT = 3000 + i;
+  console.log(colors[i]);
 
-  res.render("index", { title, message, style });
-});
+  // Start server on PORT
+  app.listen(PORT, (err) => {
+    err
+      ? console.log(`Failed to listen on PORT ${PORT}`)
+      : console.log("Web Server " + `listening on PORT ${PORT}`);
+  });
 
-// Serve the index.html file with some arguments
-app3.get("/index.html", (req, res) => {
-  const title = "Server3";
-  const message = "Welcome to my website! This website is loaded from server 3";
-  const style = "body { background-color: green; }";
-
-  res.render("index", { title, message, style });
-});
-
-// Start server on PORT 3000
-app1.listen(3000, (err) => {
-  err
-    ? console.log("Failed to listen on PORT 3000")
-    : console.log("Web Server " + "listening on PORT 3000");
-});
-
-// Start server on PORT 3001
-app2.listen(3001, (err) => {
-  err
-    ? console.log("Failed to listen on PORT 3001")
-    : console.log("Web Server " + "listening on PORT 3001");
-});
-
-// Start server on PORT 3002
-app3.listen(3002, (err) => {
-  err
-    ? console.log("Failed to listen on PORT 3002")
-    : console.log("Web Server " + "listening on PORT 3002");
-});
+  // Push an app reference to the servers array
+  servers[i] = app;
+}
